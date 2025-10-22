@@ -1,15 +1,15 @@
-// src/lib/prisma.ts
-
 import { PrismaClient } from '@prisma/client';
 
-declare global {
-  // Previene la creación de múltiples instancias de Prisma Client en desarrollo
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
-}
+// Evita múltiples instancias de PrismaClient durante el desarrollo (hot reload)
+const globalForPrisma = global as unknown as { prisma: PrismaClient | undefined };
 
-const prisma = global.prisma || new PrismaClient();
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: ['error', 'warn'], // puedes agregar 'query' si quieres depurar
+  });
 
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+// Guarda la instancia global en desarrollo
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export default prisma;

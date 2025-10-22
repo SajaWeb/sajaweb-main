@@ -1,10 +1,14 @@
 // app/api/user/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
+import { getToken } from "next-auth/jwt";
 import bcrypt from 'bcryptjs';
+import jwt from "jsonwebtoken";
 import { authMiddleware, authorizeRoles } from '../../../../middleware/authMiddleware';
 
-const prisma = new PrismaClient();
+const SECRET_KEY = process.env.JWT_SECRET;
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET;
+
 
 async function applyMiddleware(request: NextRequest) {
   const authResponse = await authMiddleware(request);
@@ -31,52 +35,89 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Permitir creación inicial de ADMIN si no hay usuarios en la BD
-    const usersCount = await prisma.user.count();
-    if (usersCount === 0) {
-      const { name, email, password } = await request.json();
-      if (!name || !email || !password) {
-        return NextResponse.json({ error: 'Faltan campos (name, email, password)' }, { status: 400 });
-      }
+    const body = await request.json();
+    console.log("📩 Body recibido:", body);
 
+    const { name, email, password, role } = body;
+
+    if (!name || !email || !password) {
+      console.warn("⚠️ Faltan campos obligatorios");
+      return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 });
+    }
+
+    console.log("🔎 Verificando usuarios existentes...");
+    const userCount = await prisma.user.count();
+    console.log("👥 Cantidad de usuarios:", userCount);
+
+    // ✅ Crear primer usuario si la base está vacía
+    if (userCount === 0) {
+      console.log("🛠️ Creando primer usuario ADMIN...");
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newAdmin = await prisma.user.create({
+      const admin = await prisma.user.create({
         data: {
           name,
           email,
           password: hashedPassword,
-          role: 'ADMIN' // forzar rol ADMIN para el primer usuario
+          role: "ADMIN",
         },
-        select: { id: true, name: true, email: true, role: true }
+        select: { id: true, name: true, email: true, role: true },
       });
+      console.log("✅ ADMIN creado correctamente:", admin);
 
-      return NextResponse.json(newAdmin, { status: 201 });
+      return NextResponse.json({
+        message: "✅ Primer usuario (ADMIN) creado correctamente",
+        user: admin,
+      });
     }
 
-    // Si ya existen usuarios, aplicar middleware y comportamiento normal
-    const middlewareResponse = await applyMiddleware(request);
-    if (middlewareResponse) return middlewareResponse;
+    // 🔒 Si hay usuarios, validar autenticación
+    const nextAuthToken = await getToken({ req: request, secret: NEXTAUTH_SECRET });
+    const authHeader = request.headers.get("Authorization");
+    const manualToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
 
-    const { name, email, password, role } = await request.json();
+    let userRole: string | null = null;
+
+    if (nextAuthToken) {
+      userRole = (nextAuthToken as any).role;
+    } else if (manualToken && SECRET_KEY) {
+      const decoded: any = jwt.verify(manualToken, SECRET_KEY);
+      userRole = decoded.role;
+    } else {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    if (userRole !== "ADMIN") {
+      return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
+    }
+
+    // 🚫 Validar duplicado
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return NextResponse.json({ error: "El correo ya está en uso" }, { status: 400 });
+    }
+
+    // Crear usuario
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role
+        role: role || "SELLER",
       },
-      select: { id: true, name: true, email: true, role: true }
+      select: { id: true, name: true, email: true, role: true },
     });
 
-    return NextResponse.json(newUser, { status: 201 });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    if (error instanceof Error && error.message.includes('Unique constraint failed on the fields: (`email`)')) {
-      return NextResponse.json({ error: 'Email already in use' }, { status: 400 });
-    }
-    return NextResponse.json({ error: 'Error creating user' }, { status: 500 });
+    return NextResponse.json({
+      message: "Usuario creado correctamente",
+      user: newUser,
+    });
+  } catch (error: any) {
+    console.error("❌ Error al crear usuario:", error);
+    return NextResponse.json(
+      { error: "Error interno al crear usuario", details: error.message },
+      { status: 500 }
+    );
   }
 }
 

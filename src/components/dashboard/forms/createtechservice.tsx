@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // components/ui/TechServiceForm.tsx
 
 'use client';
@@ -476,8 +478,8 @@ const TechServiceForm = () => {
             <TechServiceReceipt
               techService={techServiceData}
               logoUrl="/logo.png"
-              companyName="Doctor Cel"
-              companyContact="contacto@doctorcel.co"
+              companyName="Saja Soluciones Tecnológicas"
+              companyContact="contactanos@saja.com.co"
               onPrintSuccess={handlePrintSuccess}
             />
           </DialogContent>

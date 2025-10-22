@@ -36,32 +36,31 @@ const CreateUserPage: React.FC = () => {
         return;
       }
 
-      setSuccess('User created successfully');
+      setSuccess('Usuario creado exitosamente!');
       setName('');
       setEmail('');
       setPassword('');
       setRole('SELLER');
     } catch (err) {
-      console.error('User creation failed:', err);
-      setError('User creation failed. Please try again.');
+      setError('Creación de usuario fallida. Inténtalo de nuevo.');
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl mb-4">Create New User</h2>
+        <h2 className="text-2xl mb-4">Crear Nuevo Usuario</h2>
         {error && <p className="text-red-500">{error}</p>}
         {success && <p className="text-green-500">{success}</p>}
         <div className="mb-4">
-          <label className="block text-gray-700">Name</label>
+          <label className="block text-gray-700">Nombre</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             className="w-full px-3 py-2 border rounded"
-            placeholder="Jane Doe"
+            placeholder="Nombre completo"
           />
         </div>
         <div className="mb-4">
@@ -72,11 +71,11 @@ const CreateUserPage: React.FC = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full px-3 py-2 border rounded"
-            placeholder="email@example.com"
+            placeholder="email@ejemplo.com"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Password</label>
+          <label className="block text-gray-700">Contraseña</label>
           <input
             type="password"
             value={password}
@@ -87,18 +86,19 @@ const CreateUserPage: React.FC = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Role</label>
+          <label className="block text-gray-700">Rol</label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
             className="w-full px-3 py-2 border rounded"
           >
-            <option value="SELLER">Seller</option>
-            <option value="TECHNICIAN">Technician</option>
+            <option value="ADMIN">Administrador</option>
+            <option value="SELLER">Vendedor</option>
+            <option value="TECHNICIAN">Tecnico</option>
           </select>
         </div>
         <button type="submit" className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">
-          Create User
+          Crear Usuario
         </button>
       </form>
     </div>
