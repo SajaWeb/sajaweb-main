@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/app/api/techservice/route.ts
 
 import { Prisma, Status, ActiveStatus } from '@prisma/client';

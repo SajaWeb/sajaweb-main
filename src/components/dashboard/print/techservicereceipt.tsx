@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useRef, useCallback } from "react";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/Button";
@@ -99,8 +100,7 @@ const ElegantTechServiceReceipt: React.FC<ReceiptProps> = ({
             <p className="text-xs">{companyContact}</p>
             <p className="text-xs"><strong>Nit:</strong> 1017175353-9</p>
             <p className="text-xs">Régimen Simplificado</p>
-            <p className="text-xs"><strong>Itagui-Arrayanes:</strong> 3004001077</p>
-            <p className="text-xs"><strong>Barichara:</strong> 3504089988</p>
+            <p className="text-xs"><strong>Guayabal:</strong> 3004001077</p>
           </div>
 
           <Separator className="my-2" />
@@ -117,7 +117,7 @@ const ElegantTechServiceReceipt: React.FC<ReceiptProps> = ({
             </div>
             <div>
               <p className="font-medium">Fecha Estimada Entrega:</p>
-              <p>{new Date(techService.deliveryDate).toLocaleDateString("es-CO")}</p>
+              <p>{new Date(techService.deliveryDate).toLocaleDateString("es-CO", { timeZone: "America/Bogota" }).split(',')[0]}</p>
             </div>
           </div>
 
