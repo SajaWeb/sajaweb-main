@@ -31,9 +31,9 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
   const helveticaFont = await doc.embedFont(StandardFonts.Helvetica);
   const helveticaBoldFont = await doc.embedFont(StandardFonts.HelveticaBold);
 
-  const fontSize = 7;
-  const titleFontSize = 9;
-  const mediumFontSize = 8;
+  const fontSize = 8;
+  const titleFontSize = 10;
+  const mediumFontSize = 9;
   let yPosition = 980;
   const leftMargin = 8;
   const rightMargin = 212;
@@ -99,16 +99,16 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
   drawText('Régimen Simplificado', {
     x: leftMargin,
     size: fontSize,
-    font: helveticaFont,
-    color: rgb(0.2, 0.2, 0.2),
+    font: helveticaBoldFont,
+    color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
   
   drawText('No somos responsables de IVA', {
     x: leftMargin,
     size: fontSize,
-    font: helveticaFont,
-    color: rgb(0.2, 0.2, 0.2),
+    font: helveticaBoldFont,
+    color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
   
@@ -116,7 +116,7 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
   drawText(`NIT: ${companyInfo.taxId}`, {
     x: leftMargin,
     size: fontSize,
-    font: helveticaFont,
+    font: helveticaBoldFont,
     color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
@@ -124,7 +124,7 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
   drawText(`Email: ${companyInfo.email}`, {
     x: leftMargin,
     size: fontSize,
-    font: helveticaFont,
+    font: helveticaBoldFont,
     color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
@@ -132,7 +132,7 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
   drawText(`Tel: ${companyInfo.phone}`, {
     x: leftMargin,
     size: fontSize,
-    font: helveticaFont,
+    font: helveticaBoldFont,
     color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
@@ -172,24 +172,24 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
   drawText(`ID: ${invoiceData.clientTaxId}`, {
     x: leftMargin,
     size: fontSize,
-    font: helveticaFont,
-    color: rgb(0.2, 0.2, 0.2),
+    font: helveticaBoldFont,
+    color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
   
   drawText(`Dir: ${invoiceData.clientAddress}`, {
     x: leftMargin,
     size: fontSize,
-    font: helveticaFont,
-    color: rgb(0.2, 0.2, 0.2),
+    font: helveticaBoldFont,
+    color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
   
   drawText(`Tel: ${invoiceData.clientPhone}`, {
     x: leftMargin,
     size: fontSize,
-    font: helveticaFont,
-    color: rgb(0.2, 0.2, 0.2),
+    font: helveticaBoldFont,
+    color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
 
@@ -218,21 +218,21 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
       maxWidth: maxWidth
     });
     
-    const itemDetail = `${item.quantity} x $${item.price.toLocaleString('es-CO')} = $${item.subtotal.toLocaleString('es-CO')}`;
+    const itemDetail = `${item.quantity} x ${item.price.toLocaleString('es-CO')} = ${item.subtotal.toLocaleString('es-CO')}`;
     drawText(itemDetail, {
       x: leftMargin + 3,
       size: fontSize,
-      font: helveticaFont,
-      color: rgb(0.2, 0.2, 0.2),
+      font: helveticaBoldFont,
+      color: rgb(0, 0, 0),
       maxWidth: maxWidth - 3
     });
     
     if (item.discount > 0) {
-      drawText(`Desc: -$${item.discount.toLocaleString('es-CO')}`, {
+      drawText(`Desc: -${item.discount.toLocaleString('es-CO')}`, {
         x: leftMargin + 3,
         size: fontSize,
-        font: helveticaFont,
-        color: rgb(0.4, 0.4, 0.4),
+        font: helveticaBoldFont,
+        color: rgb(0, 0, 0),
         maxWidth: maxWidth - 3
       });
     }
