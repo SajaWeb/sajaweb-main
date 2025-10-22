@@ -1,0 +1,275 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role
+
+  // Relaciones con modelos de NextAuth
+  accounts Account[]
+  sessions Session[]
+
+  // Relación con CashRegister
+  cashRegisters CashRegister[]
+
+  // Relación inversa para servicios técnicos asignados como técnico
+  assignedTechServices TechService[] @relation("AssignedTechServices")
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Warehouse {
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String?
+  articles     Article[]
+  invoices     Invoice[]
+  techServices TechService[]
+}
+
+enum Visibility {
+  ENABLED
+  DISABLED
+}
+
+enum ActiveStatus {
+  ENABLED
+  DISABLED
+}
+
+model Article {
+  id              Int           @id @default(autoincrement())
+  name            String
+  description     String
+  price           Float
+  categoryId      Int
+  subcategoryId   Int?
+  camera          String?
+  createdAt       DateTime      @default(now())
+  price12         Float?
+  price16         Float?
+  Initial         Float?
+  price8          Float?
+  processor       String?
+  ram             String?
+  storage         String?
+  updatedAt       DateTime      @updatedAt
+  imageUrl1       String?
+  imageUrl2       String?
+  imageUrl3       String?
+  imageUrl4       String?
+  warehouseId     Int
+  brand           String?
+  frontCamera     String?
+  screenSize      String?
+  batteryCapacity String?
+  financialEntity String?
+  offerPrice      Float?
+  cost            Float         @default(0)
+  serialNumber    Int           @default(0)
+  visible         Visibility    @default(DISABLED)
+  active          ActiveStatus  @default(ENABLED)
+  category        Category      @relation(fields: [categoryId], references: [id])
+  subcategory     Subcategory?  @relation(fields: [subcategoryId], references: [id])
+  warehouse       Warehouse     @relation(fields: [warehouseId], references: [id])
+  InvoiceItem     InvoiceItem[]
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String
+  active        ActiveStatus  @default(ENABLED)
+  articles      Article[]
+  subcategories Subcategory[]
+}
+
+model Subcategory {
+  id         Int      @id @default(autoincrement())
+  name       String
+  active     ActiveStatus  @default(ENABLED)
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  Article    Article[]
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  number    Int      @unique @default(autoincrement())
+  createdAt DateTime @default(now())
+  total     Float
+  status    String
+  clientId  Int
+  client    Client   @relation(fields: [clientId], references: [id])
+}
+
+model TechService {
+  id           Int          @id @default(autoincrement())
+  createdAt    DateTime     @default(now())
+  status       Status
+  deviceType   String
+  serialNumber String?
+  clientId     Int
+  technicianId String?
+  warehouseId  Int
+  deliveryDate DateTime?
+  brand        String?
+  color        String?
+  observations String?
+  password     String? // Contraseña del equipo
+  active       ActiveStatus @default(ENABLED)
+  
+  client       Client       @relation(fields: [clientId], references: [id])
+  technician   User?        @relation("AssignedTechServices", fields: [technicianId], references: [id])
+  warehouse    Warehouse    @relation(fields: [warehouseId], references: [id])
+}
+
+
+enum Status {
+  EN_REPARACION
+  REPARADO
+  ENTREGADO
+  GARANTIA
+  DEVOLUCION
+}
+
+model Invoice {
+  id            Int           @id @default(autoincrement())
+  number        Int           @unique @default(autoincrement())
+  date          DateTime      @default(now())
+  total         Float
+  clientId      Int
+  companyInfoId Int?
+  clientName    String
+  clientAddress String?
+  clientPhone   String?
+  clientEmail   String?
+  clientTaxId   String?
+  warehouseId   Int
+  client        Client        @relation(fields: [clientId], references: [id])
+  companyInfo   CompanyInfo?  @relation(fields: [companyInfoId], references: [id])
+  warehouse     Warehouse     @relation(fields: [warehouseId], references: [id])
+  active        ActiveStatus  @default(ENABLED)
+  notes         String?       @default("sin nota")
+  items         InvoiceItem[]
+}
+
+model InvoiceItem {
+  id        Int     @id @default(autoincrement())
+  invoiceId Int
+  articleId Int
+  name      String
+  quantity  Int
+  price     Float
+  cost      Float   @default(0)
+  subtotal  Float
+  discount  Float?
+  article   Article @relation(fields: [articleId], references: [id])
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model Client {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  email        String?
+  phone        String?       @unique
+  address      String?
+  documentType String?
+  document     String?       @unique
+  personType   String?
+  regime       String?
+  country      String?
+  department   String?
+  city         String?
+  active       ActiveStatus  @default(ENABLED)
+  createdAt    DateTime      @default(now())
+  invoices     Invoice[]
+  orders       Order[]
+  techServices TechService[]
+}
+
+enum Role {
+  ADMIN
+  SELLER
+  TECHNICIAN
+}
+
+model CompanyInfo {
+  id             Int       @id @default(autoincrement())
+  name           String
+  address        String
+  phone          String
+  email          String
+  taxId          String
+  logoUrl        String?
+  documentType   String?
+  documentNumber String?
+  regime         String?
+  city           String?
+  department     String?
+  country        String?
+  website        String?
+  invoices       Invoice[]
+}
+
+model CashRegister {
+  id            String            @id @default(uuid())
+  date          DateTime          @unique
+  openingAmount Float
+  closingAmount Float
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyReport   DailySalesReport?
+}
+
+model DailySalesReport {
+  id                 String       @id @default(uuid())
+  date               DateTime     @unique
+  totalSales         Float
+  totalCashCollected Float
+  discrepancy        Float
+  cashRegisterId     String       @unique
+  cashRegister       CashRegister @relation(fields: [cashRegisterId], references: [id], onDelete: Cascade)
+}
