@@ -282,7 +282,7 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
       x: leftMargin,
       size: fontSize,
       font: helveticaFont,
-      color: rgb(0.3, 0.3, 0.3),
+      color: rgb(0, 0, 0),
       maxWidth: maxWidth
     });
   }
@@ -293,7 +293,7 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
     x: leftMargin,
     size: fontSize,
     font: helveticaBoldFont,
-    color: rgb(0.2, 0.2, 0.2),
+    color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
   
@@ -302,7 +302,7 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
     x: leftMargin,
     size: fontSize - 1,
     font: helveticaFont,
-    color: rgb(0.4, 0.4, 0.4),
+    color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
 
@@ -310,8 +310,7 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
   page.drawLine({
     start: { x: leftMargin, y: yPosition },
     end: { x: rightMargin, y: yPosition },
-    thickness: 0.3,
-    color: rgb(0.7, 0.7, 0.7)
+    color: rgb(0, 0, 0)
   });
   yPosition -= 6;
   
@@ -321,7 +320,7 @@ export const generatePDF = async (invoiceData: any, companyInfo: CompanyInfo) =>
     x: (page.getWidth() - thanksWidth) / 2,
     size: fontSize,
     font: helveticaFont,
-    color: rgb(0.4, 0.4, 0.4),
+    color: rgb(0, 0, 0),
     maxWidth: maxWidth
   });
 
