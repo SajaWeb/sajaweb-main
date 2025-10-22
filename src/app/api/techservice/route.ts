@@ -1,8 +1,8 @@
 // src/app/api/techservice/route.ts
 
-import { PrismaClient, Prisma, Status, ActiveStatus } from '@prisma/client';
+import { Prisma, Status, ActiveStatus } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { CreateTechServiceDTO, CreateTechServiceSchema } from '@/models/techservice';
+import {  CreateTechServiceSchema } from '@/models/techservice';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
@@ -109,9 +109,9 @@ export async function POST(req: Request) {
       }
     }
 
-    console.error('Error creando TechService:', error);
+    console.error('Error creando Orden de Servicio:', error);
     return NextResponse.json(
-      { error: 'Error creando TechService', details: error.message },
+      { error: 'Error creando Orden de Servicio', details: error.message },
       { status: 500 }
     );
   }
@@ -219,7 +219,7 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error('Error fetching TechService(s):', error);
     return NextResponse.json(
-      { message: 'Error obteniendo TechService(s)' },
+      { message: 'Error obteniendo Orden de Servicio' },
       { status: 500 }
     );
   }

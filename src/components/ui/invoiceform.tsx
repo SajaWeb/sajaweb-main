@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // components/ui/invoiceForm.tsx
 
 'use client';
@@ -44,7 +46,7 @@ interface InvoiceFormProps {
 
 const InvoiceForm: React.FC<InvoiceFormProps> = ({ refreshKey }) => {
   const { setClient, addItem, removeItem, items, client } = useInvoiceStore();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [clients, setClients] = useState<Client[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
@@ -190,15 +192,16 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ refreshKey }) => {
         const responseData = await response.json();
 
         const companyInfo = {
-          name: "Doctor Cel",
-          address: "Calle 52 sur 70-10",
+          name: "Saja Soluciones Tecnológicas",
+          address: "Cra 52 2 sur 31 Medellín, Colombia",
           phone: "3004001077",
-          email: "doctorcel@gmail.com",
+          email: "contactanos@saja.com.co",
           taxId: "1017175353-9",
         };
 
         const pdfBytes = await generatePDF(responseData, companyInfo);
-        const blob = new Blob([pdfBytes], { type: "application/pdf" });
+        const uint8Array = new Uint8Array(pdfBytes as any);
+        const blob = new Blob([uint8Array], { type: "application/pdf" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;

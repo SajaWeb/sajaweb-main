@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react';
 const InvoicePage = () => {
   // Estado para disparar la actualización de InvoiceForm
   const [refreshKey, setRefreshKey] = useState(0);
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   // Función para incrementar refreshKey y disparar la actualización
   const triggerRefresh = () => {

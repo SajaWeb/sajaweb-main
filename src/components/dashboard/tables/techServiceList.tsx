@@ -34,7 +34,7 @@ const TechServiceList = () => {
   const [selectedTechService, setSelectedTechService] = useState<TechServiceDetails | null>(null);
   const limit = 10;
 
-  const { techServices, pagination, loading, error } = useTechServices({
+  const { techServices, pagination, error } = useTechServices({
     page: currentPage,
     limit,
     ...searchParams,
@@ -115,10 +115,10 @@ const TechServiceList = () => {
               <SelectValue placeholder="Seleccionar bodega" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="3">Barichara</SelectItem>
-              <SelectItem value="2">Guayabal</SelectItem>
-              <SelectItem value="4">Bello</SelectItem>
+              <SelectItem value="1">Todos</SelectItem>
+              <SelectItem value="1">Barichara</SelectItem>
+              <SelectItem value="1">Guayabal</SelectItem>
+              <SelectItem value="1">Bello</SelectItem>
             </SelectContent>
           </Select>
         </div>
