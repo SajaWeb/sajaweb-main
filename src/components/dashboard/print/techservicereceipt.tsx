@@ -79,6 +79,16 @@ const ElegantTechServiceReceipt: React.FC<ReceiptProps> = ({
     [handlePrint]
   );
 
+  // Función para formatear fecha sin problemas de zona horaria
+  const formatLocalDate = (dateString: string) => {
+    const date = new Date(dateString);
+    // Extraer año, mes y día directamente sin conversión de zona horaria
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="max-w-sm mx-auto p-4">
       <div className="flex justify-between mb-6">
@@ -117,7 +127,7 @@ const ElegantTechServiceReceipt: React.FC<ReceiptProps> = ({
             </div>
             <div>
               <p className="font-medium">Fecha Estimada Entrega:</p>
-              <p>{new Date(techService.deliveryDate).toLocaleDateString("es-CO", { timeZone: "America/Bogota" }).split(',')[0]}</p>
+              <p>{formatLocalDate(techService.deliveryDate)}</p>
             </div>
           </div>
 
@@ -139,7 +149,7 @@ const ElegantTechServiceReceipt: React.FC<ReceiptProps> = ({
             <p><span className="font-medium">Marca:</span> {techService.brand}</p>
             <p><span className="font-medium">Modelo:</span> {techService.color}</p>
             <p><span className="font-medium">IMEI/Serie:</span> {techService.serialNumber}</p>
-            <p><span className="font-medium">Bodega:</span> {techService.warehouseId === 3 ? "Barichara" : techService.warehouseId === 2 ? "Arrayanes" : `Desconocida (ID: ${techService.warehouseId})`}</p>
+            <p><span className="font-medium">Bodega:</span> {techService.warehouseId === 1 ? "Guayabal" : techService.warehouseId === 2 ? "Arrayanes" : `Desconocida (ID: ${techService.warehouseId})`}</p>
             <p><span className="font-medium">Observaciones:</span> {techService.observations}</p>
           </div>
 
@@ -156,4 +166,3 @@ const ElegantTechServiceReceipt: React.FC<ReceiptProps> = ({
 };
 
 export default ElegantTechServiceReceipt;
-
